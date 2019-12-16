@@ -4,9 +4,11 @@
 <h2>Change your details</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ user_form.as_p }}
+    {{ profile_form.as_p}}
     <button type="submit">Save changes</button>
 </form>
 <p><a href="{% url 'home' %}">Home</a></p>
+<p><a href="{% url 'logout' %}">Log out</a></p><br>
 
 {% endblock %}

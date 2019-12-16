@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Your Profile</h2>
-<p><label>Past address:</label> {{profile.past_address}}</p>
-<p><label>Present address:</label> {{profile.present_address}}</p>
-<p><label>Phone number:</label> {{profile.phone_number}}</p>
+<h2>Your details</h2>
+<p><label>First name:</label> {{user.first_name}}</p>
+<p><label>Last name:</label> {{user.last_name}}</p>
+<p><label>Email:</label> {{user.email}}</p>
+<p><label>Past address:</label> {{user.profile.past_address}}</p>
+<p><label>Present address:</label> {{user.profile.present_address}}</p>
+<p><label>Phone number:</label> {{user.profile.phone_number}}</p>
 <p><a href="{% url 'update_profile' %}">Update profile</a></p>
 <p><a href="{% url 'home' %}">Home</a></p>
 <p><a href="{% url 'delete' %}">Delete your profile</a></p>
+<p><a href="{% url 'logout' %}">Log out</a></p><br>
 
 {% endblock %}
