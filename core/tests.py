@@ -17,6 +17,13 @@ class ProfileTest(TestCase):
         )
         return user
 
+    def test_profile_absolute_url(self):
+        user = self.create_user_with_profile()
+        client = Client()
+        client.post(reverse('login'),
+                               {'username': 'Tom', 'password': 'iwonttellyou'})
+        self.assertEqual(user.profile.get_absolute_url(), reverse("details"))
+
     def test_user_creation(self):
         user = self.create_user_with_profile()
         self.assertTrue(isinstance(user.profile, Profile))
@@ -60,6 +67,10 @@ class ProfileTest(TestCase):
         self.create_user_with_profile()
         client = Client()
         client.post(reverse('login'), {'username': 'Tom', 'password': 'iwonttellyou'})
+        response = client.get(reverse('update_profile'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Coal Drops Yard")
+
         data = {"past_address": "Tomstreet 13",
                 "present_address": "Adamstreet 14",
                 "phone_number": "42141242"}
@@ -77,7 +88,8 @@ class ProfileTest(TestCase):
     def test_cant_get_to_delete_when_not_logged_in(self):
         client = Client()
         response = client.get(reverse('delete'))
-        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/login/?details=/delete/", status_code=302,
+                             target_status_code=200, fetch_redirect_response=True)
 
     def test_valid_profile_form(self):
         user = self.create_user_with_profile()
@@ -94,3 +106,26 @@ class ProfileTest(TestCase):
                 "phone_number": ""}
         form = ProfileForm(data=data)
         self.assertFalse(form.is_valid())
+
+    def test_change_password(self):
+        self.create_user_with_profile()
+        client = Client()
+        client.post(reverse('login'), {'username': 'Tom', 'password': 'iwonttellyou'})
+        response = client.get(reverse('password'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        data = {"old_password": "iwonttellyou", "new_password1": "new_pass",
+                "new_password2": "new_pass"}
+        response = client.post(reverse('password'), data)
+        self.assertRedirects(response, reverse("home"), status_code=302,
+                             target_status_code=200, fetch_redirect_response=True)
+        self.assertEquals(response.wsgi_request.user.check_password("new_pass"), True)
+
+    def test_invalid_change_password(self):
+        self.create_user_with_profile()
+        client = Client()
+        client.post(reverse('login'), {'username': 'Tom', 'password': 'iwonttellyou'})
+        data = {"old_password": "iwonttellyou", "new_password1": "new_pass",
+                "new_password2": "wrong_new_pass"}
+        response = client.post(reverse('password'), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The two password fields didn")
