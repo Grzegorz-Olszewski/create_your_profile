@@ -80,3 +80,9 @@ class ProfileUpdateView(LoginRequiredMixin, View):
             profile_form.save()
             messages.success(request, 'Success')
             return redirect('details')
+        else:
+            context = {
+                'user_form': user_form,
+                'profile_form': profile_form
+            }
+            return render(request, 'core/profile_form.html', context)
