@@ -10,12 +10,28 @@ from django.views.generic import DetailView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from social_django.models import UserSocialAuth
 
 
 @login_required
 def home(request):
     return render(request, 'core/home.html')
 
+@login_required
+def settings(request):
+    user = request.user
+
+    try:
+        github_login = user.social_auth.get(provider='github')
+    except UserSocialAuth.DoesNotExist:
+        github_login = None
+
+    can_disconnect = (user.social_auth.count() > 1 or user.has_usable_password())
+
+    return render(request, 'core/settings.html', {
+        'github_login': github_login,
+        'can_disconnect': can_disconnect
+    })
 
 @login_required
 def password(request):
