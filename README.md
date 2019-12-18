@@ -5,7 +5,7 @@ Application that allows user to login with his Github credentials and create/edi
 1. Clone repository ```git clone git@github.com:Grzegorz-Olszewski/create_your_profile.git```
 2. Install docker-compose https://github.com/Yelp/docker-compose/blob/master/docs/install.md
 3. Using terminal go to project directory and run ```docker-compose up --build```
-4. Application is running on http://0.0.0.0:8000/ 
+4. Application is running on http://localhost:8000/
 
 
 # Running tests and checking test coverage
